@@ -12,12 +12,12 @@ class Field:
 # Реалізація класу Name
 class Name(Field):
     def __init__(self, name):
-        if self.phone_check(name):  
+        if self.name_check(name):  
             super().__init__(name)
         else:
             raise ValueError(f"Невірний формат імені: {name}")
     
-    def phone_check(self,name):
+    def name_check(self,name):
         pattern = r"^[A-Za-z]+$"
         match = re.search(pattern, name)    # Перевірка формату імені
         if match:
@@ -32,7 +32,7 @@ class Phone(Field):
             raise ValueError(f"Невірний формат телефону: {phone}")
     
     def phone_check(self,phone):
-        pattern = r"([0-9]{10})"
+        pattern = r"^[0-9]{10}$"
         match = re.search(pattern, phone)    # Перевірка формату телефону
         if match:
             return True
@@ -50,10 +50,16 @@ class Record:
         self.phones = [phone for phone in self.phones if phone.value != entered_phone]
 
     def edit_phone(self, old_phone, new_phone):
+        found = False
         for phone in self.phones:
             if phone.value == old_phone:
                 phone.value = Phone(new_phone).value
+                found = True
+                break 
 
+        if not found:
+            raise ValueError(f"Телефон відсутній: {old_phone}")
+            
     def find_phone(self, phone):
         for p in self.phones:
             if p.value == phone:
@@ -112,3 +118,7 @@ print(f"{john.name}: {found_phone}")  # Виведення: John: 5555555555
 
 # Видалення запису Jane
 book.delete("Jane")
+
+john_record.add_phone("0504567890")
+john.edit_phone("5555555555", "2222222222")
+print(book)
